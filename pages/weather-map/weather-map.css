@@ -368,9 +368,6 @@
   height: 400px;
   background-color: #f0f2f5;
   position: relative;
-  background-image: url('../../assets/images/weather-map-placeholder.jpg');
-  background-size: cover;
-  background-position: center;
 }
 
 .map-legend {
@@ -625,9 +622,9 @@
 
 /* 右侧数据面板样式 */
 .data-panel-toggle {
-  position: absolute;
-  left: -15px;
-  top: 50%;
+  position: fixed;
+  left: calc(100vw - 450px - 15px);
+  top: 50vh;
   transform: translateY(-50%);
   width: 30px;
   height: 30px;
@@ -638,8 +635,17 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  z-index: 91;
+  z-index: 1000;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.data-panel.collapsed .data-panel-toggle {
+  left: calc(100vw - 15px);
+}
+
+.data-panel.collapsed .data-panel-toggle i {
+  transform: rotate(180deg);
 }
 
 .data-panel-content {
@@ -942,4 +948,113 @@
   .data-panel {
     width: 100%;
   }
+}
+
+/* 地图弹窗样式 */
+.field-popup {
+  padding: 8px;
+  max-width: 300px;
+}
+
+.field-popup h4 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--light-gray);
+  padding-bottom: 8px;
+}
+
+.field-popup table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 10px;
+}
+
+.field-popup table td {
+  padding: 4px 0;
+  font-size: 14px;
+}
+
+.field-popup table td:first-child {
+  font-weight: 500;
+  color: var(--text-secondary);
+  width: 40%;
+}
+
+.field-popup .popup-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+  border-top: 1px solid var(--light-gray);
+  padding-top: 8px;
+}
+
+.field-popup .btn-sm {
+  padding: 2px 8px;
+  font-size: 12px;
+}
+
+/* 数据面板折叠样式 */
+.data-panel-toggle {
+  position: fixed;
+  left: calc(100vw - 450px - 15px);
+  top: 50vh;
+  transform: translateY(-50%);
+  width: 30px;
+  height: 30px;
+  background-color: white;
+  border: 1px solid var(--light-gray);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.data-panel.collapsed .data-panel-toggle {
+  left: calc(100vw - 15px);
+}
+
+.data-panel.collapsed .data-panel-toggle i {
+  transform: rotate(180deg);
+}
+
+.data-panel {
+  transition: width 0.3s ease, min-width 0.3s ease, padding 0.3s ease;
+}
+
+.data-panel-content {
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.side-menu-toggle {
+  position: fixed;
+  right: calc(100% - 350px);
+  top: 50vh;
+  transform: translateY(-50%);
+  width: 30px;
+  height: 30px;
+  background-color: white;
+  border: 1px solid var(--light-gray);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.side-menu.collapsed .side-menu-toggle {
+  right: calc(100% - 56px);
+}
+
+.side-menu.collapsed .side-menu-toggle i {
+  transform: rotate(180deg);
 } 

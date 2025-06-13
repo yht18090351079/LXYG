@@ -26,8 +26,12 @@ document.addEventListener('DOMContentLoaded', function() {
  * 处理登录操作
  */
 function handleLogin() {
-  // 直接登录，无需验证账号密码
+  // 获取用户名和密码
+  const username = document.getElementById('username').value.trim();
+  const password = document.getElementById('password').value.trim();
+  const remember = document.getElementById('remember').checked;
   
+  // 演示系统：直接允许登录，无需验证
   // 跳转到首页
   showMessage('登录成功，正在跳转...', 'success');
   setTimeout(() => {

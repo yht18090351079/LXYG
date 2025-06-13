@@ -86,22 +86,36 @@
         width: 100%;
       }
     }
+    
+    .notice-text {
+      color: #1890ff;
+      font-size: 14px;
+      text-align: center;
+      margin-bottom: 15px;
+      padding: 8px;
+      background-color: #e6f7ff;
+      border-radius: 4px;
+    }
   </style>
 </head>
 <body>
   <div class="login-container">
     <div class="login-box">
       <div class="login-header">
-        <img src="https://via.placeholder.com/80x80?text=Logo" alt="系统Logo" class="login-logo">
+        <i class="fas fa-leaf login-logo" style="font-size: 60px; color: #52C41A;"></i>
         <h1 class="system-title">甘肃临夏农情遥感系统</h1>
       </div>
       
       <form class="login-form">
+        <div class="notice-text">
+          <i class="fas fa-info-circle"></i> 演示系统，无需输入账号密码，直接点击下方登录按钮即可
+        </div>
+        
         <div class="form-group">
           <label for="username" class="form-label">用户名</label>
           <div class="input-with-icon">
             <i class="fas fa-user"></i>
-            <input type="text" id="username" class="form-input" placeholder="请输入用户名">
+            <input type="text" id="username" class="form-input" placeholder="演示系统无需输入">
           </div>
         </div>
         
@@ -109,7 +123,7 @@
           <label for="password" class="form-label">密码</label>
           <div class="input-with-icon">
             <i class="fas fa-lock"></i>
-            <input type="password" id="password" class="form-input" placeholder="请输入密码">
+            <input type="password" id="password" class="form-input" placeholder="演示系统无需输入">
           </div>
         </div>
         
@@ -121,7 +135,7 @@
           <a href="#" class="forgot-password">忘记密码?</a>
         </div>
         
-        <button type="button" class="btn btn-primary login-btn">登录</button>
+        <button type="button" class="btn btn-primary login-btn">进入系统</button>
       </form>
       
       <div class="login-footer">

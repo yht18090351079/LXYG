@@ -30,109 +30,10 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // 显示未选择状态的友好提示
   showNoSelectionMessage();
-
-  // 添加页卡切换样式
-  addTabStyles();
+  
+  // 初始化右侧页卡切换功能
+  initTabSwitch();
 });
-
-/**
- * 添加页卡切换所需的CSS样式
- */
-function addTabStyles() {
-  const styleElement = document.createElement('style');
-  styleElement.textContent = `
-    /* 页卡切换样式 */
-    .detail-tabs {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-    }
-    
-    .tab-header {
-      display: flex;
-      border-bottom: 1px solid #e8e8e8;
-      margin-bottom: 12px;
-    }
-    
-    .tab-item {
-      padding: 8px 16px;
-      cursor: pointer;
-      font-size: 14px;
-      color: #595959;
-      position: relative;
-      transition: all 0.3s;
-    }
-    
-    .tab-item.active {
-      color: #1890FF;
-      font-weight: 500;
-    }
-    
-    .tab-item.active:after {
-      content: '';
-      position: absolute;
-      bottom: -1px;
-      left: 0;
-      right: 0;
-      height: 2px;
-      background-color: #1890FF;
-    }
-    
-    .tab-content {
-      flex: 1;
-      overflow-y: auto;
-    }
-    
-    .tab-pane {
-      display: none;
-      padding: 0 4px;
-    }
-    
-    .tab-pane.active {
-      display: block;
-    }
-    
-    /* 数据图表样式调整 */
-    #selectedAreaGrowthChart,
-    #selectedAreaGaugeChart {
-      height: 220px;
-      margin-bottom: 16px;
-    }
-    
-    .chart-container {
-      margin-bottom: 16px;
-      background-color: #fff;
-      border-radius: 4px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-      overflow: hidden;
-    }
-    
-    .chart-header {
-      padding: 8px 12px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid #f0f0f0;
-    }
-    
-    .chart-title {
-      margin: 0;
-      font-size: 14px;
-      font-weight: 500;
-      color: #333;
-    }
-    
-    .chart-actions {
-      display: flex;
-    }
-    
-    .chart-body {
-      padding: 8px;
-      height: 180px;
-    }
-  `;
-  document.head.appendChild(styleElement);
-}
 
 /**
  * 初始化侧边栏折叠功能
@@ -491,7 +392,7 @@ function initEchartsMap(regionId) {
   let mapName = '甘肃省临夏回族自治州';
   if (regionId === 'all') {
     // 加载临夏州全州地图
-    $.getJSON('../../../static/map/china.json', function(data) {
+    $.getJSON('../../static/map/china.json', function(data) {
       // 这里应该替换为实际的临夏州地图数据
       // 由于示例中没有具体的临夏州地图，这里使用中国地图作为示例
       let d = [];
@@ -513,7 +414,7 @@ function initEchartsMap(regionId) {
     // 注意：这里需要根据实际情况修改，将regionId映射到对应的地图JSON文件
     const countyMapping = {
       'linxia-city': '620900',      // 临夏市
-      'linxia-county': '622921',    // 临夏县
+      'linxia-county': '622900',    // 临夏县
       'kangle': '622922',           // 康乐县
       'yongjing': '622923',         // 永靖县
       'guanghe': '622924',          // 广河县
@@ -535,7 +436,7 @@ function initEchartsMap(regionId) {
     };
     mapName = countyNames[regionId] || '临夏市';
     
-    $.getJSON(`../../../static/map/city/${countyId}.json`, function(data) {
+    $.getJSON(`../../static/map/city/${countyId}.json`, function(data) {
       // 处理区县地图数据
       let d = [];
       for (let i = 0; data.features && i < data.features.length; i++) {
@@ -1213,7 +1114,6 @@ function initRealMap(townId, countyId) {
             <tr><td>当前湿度:</td><td>78%</td></tr>
             <tr><td>土壤水分:</td><td>65%</td></tr>
           </table>
-          <button class="btn btn-primary btn-sm mt-2">查看详情</button>
         </div>
       `);
     
@@ -1243,7 +1143,6 @@ function initRealMap(townId, countyId) {
             <tr><td>今日捕获:</td><td>${device.catches}只</td></tr>
             <tr><td>主要虫种:</td><td>稻飞虱、蚜虫</td></tr>
           </table>
-          <button class="btn btn-primary btn-sm mt-2">查看详情</button>
         </div>
       `);
     
@@ -1274,7 +1173,6 @@ function initRealMap(townId, countyId) {
             <tr><td>害虫密度:</td><td>${device.status === '预警' ? '<span style="color: #F5222D">高</span>' : '正常'}</td></tr>
             ${device.alert ? '<tr><td>预警信息:</td><td><span style="color: #F5222D">'+device.alert+'</span></td></tr>' : ''}
           </table>
-          <button class="btn btn-primary btn-sm mt-2">查看详情</button>
         </div>
       `);
     
@@ -1432,6 +1330,7 @@ function initGrowthChart() {
   if (!chartDom) return;
   
   const chart = echarts.init(chartDom);
+  window.growthChart = chart; // 保存图表实例
   
   // 模拟数据
   const dates = ['3月', '4月', '5月', '6月', '7月'];
@@ -1535,6 +1434,7 @@ function initGaugeChart() {
   if (!chartDom) return;
   
   const chart = echarts.init(chartDom);
+  window.gaugeChart = chart; // 保存图表实例
   
   const option = {
     series: [
@@ -1726,12 +1626,21 @@ function updateSelectedDetails(type, subtype, data) {
   const thumbnail = detailsSection.querySelector('.thumbnail');
   const detailInfo = detailsSection.querySelector('.detail-info');
   
-  if (!detailsSection || !thumbnail) return;
+  if (!detailsSection || !thumbnail || !detailInfo) return;
+  
+  // 清空现有内容
+  detailInfo.innerHTML = '';
   
   // 更新标题
   const sectionTitle = detailsSection.querySelector('.section-title');
   if (sectionTitle) {
     sectionTitle.textContent = type === 'field' ? '选中地块详情' : '选中设备详情';
+  }
+  
+  // 确保详情页卡被激活显示
+  const detailsTab = document.querySelector('.tab-button[data-tab="details"]');
+  if (detailsTab && !detailsTab.classList.contains('active')) {
+    detailsTab.click();
   }
   
   // 更新缩略图
@@ -1789,50 +1698,6 @@ function updateSelectedDetails(type, subtype, data) {
       </div>
     `;
   }
-  
-  // 创建页卡切换结构
-  const tabsHTML = `
-    <div class="detail-tabs">
-      <div class="tab-header">
-        <div class="tab-item active" data-tab="info">详细信息</div>
-        <div class="tab-item" data-tab="charts">数据图表</div>
-      </div>
-      <div class="tab-content">
-        <div class="tab-pane active" id="tab-info"></div>
-        <div class="tab-pane" id="tab-charts">
-          <div class="data-charts">
-            <div class="chart-container">
-              <div class="chart-header">
-                <h4 class="chart-title">长势指数变化趋势</h4>
-                <div class="chart-actions">
-                  <button class="btn btn-text">
-                    <i class="fas fa-expand"></i>
-                  </button>
-                </div>
-              </div>
-              <div class="chart-body" id="selectedAreaGrowthChart"></div>
-            </div>
-            
-            <div class="chart-container">
-              <div class="chart-header">
-                <h4 class="chart-title">关键指标完成情况</h4>
-                <div class="chart-actions">
-                  <button class="btn btn-text">
-                    <i class="fas fa-expand"></i>
-                  </button>
-                </div>
-              </div>
-              <div class="chart-body" id="selectedAreaGaugeChart"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  `;
-  
-  // 清空并更新详情内容区域
-  detailInfo.innerHTML = tabsHTML;
-  const infoPane = document.getElementById('tab-info');
   
   // 根据类型和数据生成详情内容
   let detailsHTML = '';
@@ -1959,332 +1824,16 @@ function updateSelectedDetails(type, subtype, data) {
       `;
     }
     
-    // 添加查看历史数据链接
+    // 添加历史数据链接
     detailsHTML += `
       <div class="info-row" style="margin-top: 10px;">
-        <button class="btn btn-primary btn-sm">查看历史数据</button>
+        <button class="btn btn-primary btn-sm" onclick="showHistoryDataPopup('${data.id}', '${subtype}')">查看历史数据</button>
       </div>
     `;
   }
   
   // 更新详情内容
-  infoPane.innerHTML = detailsHTML;
-  
-  // 初始化页卡切换事件
-  initDetailTabs();
-  
-  // 初始化选中区域的图表
-  initSelectedAreaCharts(type, subtype, data);
-}
-
-/**
- * 初始化详情面板的页卡切换功能
- */
-function initDetailTabs() {
-  const tabItems = document.querySelectorAll('.tab-item');
-  const tabPanes = document.querySelectorAll('.tab-pane');
-  
-  tabItems.forEach(item => {
-    item.addEventListener('click', function() {
-      // 移除所有页卡的active类
-      tabItems.forEach(tab => tab.classList.remove('active'));
-      tabPanes.forEach(pane => pane.classList.remove('active'));
-      
-      // 为当前点击的页卡添加active类
-      this.classList.add('active');
-      
-      // 显示对应的内容面板
-      const tabId = this.getAttribute('data-tab');
-      document.getElementById(`tab-${tabId}`).classList.add('active');
-      
-      // 如果切换到图表页卡，需要重新调整图表大小以正确显示
-      if (tabId === 'charts') {
-        if (window.selectedAreaGrowthChart) {
-          window.selectedAreaGrowthChart.resize();
-        }
-        if (window.selectedAreaGaugeChart) {
-          window.selectedAreaGaugeChart.resize();
-        }
-      }
-    });
-  });
-}
-
-/**
- * 初始化选中区域的图表
- * @param {string} type - 类型：'field'(农田) 或 'device'(设备)
- * @param {string} subtype - 子类型
- * @param {object} data - 详情数据对象
- */
-function initSelectedAreaCharts(type, subtype, data) {
-  // 初始化长势指数变化趋势图表
-  initSelectedAreaGrowthChart(type, subtype, data);
-  
-  // 初始化关键指标完成情况图表
-  initSelectedAreaGaugeChart(type, subtype, data);
-}
-
-/**
- * 初始化选中区域的长势指数变化趋势图表
- */
-function initSelectedAreaGrowthChart(type, subtype, data) {
-  const chartDom = document.getElementById('selectedAreaGrowthChart');
-  if (!chartDom) return;
-  
-  // 销毁可能存在的旧实例
-  if (window.selectedAreaGrowthChart) {
-    window.selectedAreaGrowthChart.dispose();
-  }
-  
-  const chart = echarts.init(chartDom);
-  window.selectedAreaGrowthChart = chart;
-  
-  // 基于选中对象生成数据
-  let dates, growthData, rainData;
-  
-  if (type === 'field') {
-    // 不同作物/地块类型的生长数据可以有所区别
-    switch(subtype) {
-      case 'wheat':
-        dates = ['3月', '4月', '5月', '6月', '7月'];
-        growthData = [0.35, 0.52, 0.73, 0.85, parseFloat(data.growthIndex) || 0.86];
-        rainData = [45, 65, 95, 120, 75];
-        break;
-      case 'corn':
-        dates = ['3月', '4月', '5月', '6月', '7月'];
-        growthData = [0.40, 0.55, 0.68, 0.82, parseFloat(data.growthIndex) || 0.92];
-        rainData = [40, 70, 98, 110, 80];
-        break;
-      case 'vegetable':
-        dates = ['3月', '4月', '5月', '6月', '7月'];
-        growthData = [0.60, 0.72, 0.68, 0.64, parseFloat(data.growthIndex) || 0.65];
-        rainData = [35, 75, 90, 105, 85];
-        break;
-      case 'greenhouse':
-        dates = ['3月', '4月', '5月', '6月', '7月'];
-        growthData = [0.60, 0.78, 0.85, 0.89, parseFloat(data.growthIndex) || 0.93];
-        rainData = [0, 0, 0, 0, 0]; // 大棚不受降水影响
-        break;
-      default:
-        dates = ['3月', '4月', '5月', '6月', '7月'];
-        growthData = [0.45, 0.58, 0.71, 0.83, 0.86];
-        rainData = [35, 58, 90, 120, 75];
-    }
-  } else {
-    // 设备数据显示
-    // 这里可以根据设备类型展示不同的数据
-    dates = ['3月', '4月', '5月', '6月', '7月'];
-    growthData = [0.45, 0.58, 0.71, 0.83, 0.86];
-    rainData = [35, 58, 90, 120, 75];
-  }
-  
-  const option = {
-    tooltip: {
-      trigger: 'axis',
-      axisPointer: {
-        type: 'cross'
-      }
-    },
-    grid: {
-      left: '3%',
-      right: '4%',
-      bottom: '3%',
-      containLabel: true
-    },
-    xAxis: {
-      type: 'category',
-      data: dates
-    },
-    yAxis: [
-      {
-        type: 'value',
-        name: '长势指数',
-        min: 0,
-        max: 1,
-        position: 'left',
-        axisLine: {
-          show: true,
-          lineStyle: {
-            color: '#1890FF'
-          }
-        },
-        splitLine: {
-          show: false
-        }
-      },
-      {
-        type: 'value',
-        name: '降水量',
-        min: 0,
-        max: 150,
-        position: 'right',
-        axisLine: {
-          show: true,
-          lineStyle: {
-            color: '#52C41A'
-          }
-        },
-        splitLine: {
-          show: false
-        },
-        axisLabel: {
-          formatter: '{value} mm'
-        }
-      }
-    ],
-    series: [
-      {
-        name: '长势指数',
-        type: 'line',
-        data: growthData,
-        smooth: true,
-        lineStyle: {
-          width: 3,
-          color: '#1890FF'
-        },
-        itemStyle: {
-          color: '#1890FF'
-        }
-      },
-      {
-        name: '降水量',
-        type: 'bar',
-        yAxisIndex: 1,
-        data: rainData,
-        itemStyle: {
-          color: '#52C41A',
-          opacity: 0.7
-        }
-      }
-    ]
-  };
-  
-  chart.setOption(option);
-}
-
-/**
- * 初始化选中区域的关键指标完成情况图表
- */
-function initSelectedAreaGaugeChart(type, subtype, data) {
-  const chartDom = document.getElementById('selectedAreaGaugeChart');
-  if (!chartDom) return;
-  
-  // 销毁可能存在的旧实例
-  if (window.selectedAreaGaugeChart) {
-    window.selectedAreaGaugeChart.dispose();
-  }
-  
-  const chart = echarts.init(chartDom);
-  window.selectedAreaGaugeChart = chart;
-  
-  // 根据所选对象和类型生成仪表盘值
-  let gaugeValue;
-  
-  if (type === 'field') {
-    // 使用长势指数作为仪表盘值
-    gaugeValue = parseFloat(data.growthIndex) || 0.86;
-  } else if (type === 'device') {
-    // 对于设备，可以使用不同的指标
-    switch(subtype) {
-      case 'monitor':
-        gaugeValue = 0.82; // 设备工作性能指标
-        break;
-      case 'light':
-        gaugeValue = data.battery ? parseFloat(data.battery) / 100 : 0.85; // 使用电量
-        break;
-      case 'trap':
-        gaugeValue = data.status === '预警' ? 0.35 : 0.78; // 根据状态显示
-        break;
-      default:
-        gaugeValue = 0.75;
-    }
-  } else {
-    gaugeValue = 0.86;
-  }
-  
-  const option = {
-    series: [
-      {
-        type: 'gauge',
-        startAngle: 180,
-        endAngle: 0,
-        min: 0,
-        max: 1,
-        splitNumber: 5,
-        radius: '90%',
-        axisLine: {
-          lineStyle: {
-            width: 10,
-            color: [
-              [0.6, '#F5222D'],
-              [0.8, '#FAAD14'],
-              [1, '#52C41A']
-            ]
-          }
-        },
-        pointer: {
-          icon: 'path://M12.8,0.7l12,40.1H0.7L12.8,0.7z',
-          length: '12%',
-          width: 10,
-          offsetCenter: [0, '-40%'],
-          itemStyle: {
-            color: 'auto'
-          }
-        },
-        axisTick: {
-          length: 12,
-          lineStyle: {
-            color: 'auto',
-            width: 2
-          }
-        },
-        splitLine: {
-          length: 20,
-          lineStyle: {
-            color: 'auto',
-            width: 3
-          }
-        },
-        axisLabel: {
-          color: '#999',
-          fontSize: 12,
-          distance: -50,
-          formatter: function(value) {
-            if (value === 0.2) {
-              return '差';
-            } else if (value === 0.4) {
-              return '较差';
-            } else if (value === 0.6) {
-              return '一般';
-            } else if (value === 0.8) {
-              return '良好';
-            } else if (value === 1) {
-              return '优秀';
-            }
-            return '';
-          }
-        },
-        detail: {
-          valueAnimation: true,
-          formatter: '{value}',
-          color: 'auto',
-          offsetCenter: [0, '-20%'],
-          fontSize: 24
-        },
-        data: [
-          {
-            value: gaugeValue,
-            name: type === 'field' ? '当前长势指数' : '设备状态指数',
-            title: {
-              offsetCenter: [0, '30%']
-            }
-          }
-        ]
-      }
-    ]
-  };
-  
-  chart.setOption(option);
+  detailInfo.innerHTML = detailsHTML;
 }
 
 /**
@@ -2335,4 +1884,478 @@ function showNoSelectionMessage() {
       <p style="font-size: 14px; margin-top: 8px;">您可以选择农田地块或物联网设备，查看详细数据</p>
     </div>
   `;
+}
+
+/**
+ * 初始化右侧页卡切换功能
+ */
+function initTabSwitch() {
+  const tabButtons = document.querySelectorAll('.tab-button');
+  const tabContents = document.querySelectorAll('.tab-content');
+  
+  if (tabButtons.length && tabContents.length) {
+    // 初始化：显示第一个页卡内容，激活第一个按钮
+    tabContents.forEach((content, index) => {
+      if (index === 0) {
+        content.classList.add('active');
+      } else {
+        content.classList.remove('active');
+      }
+    });
+
+    tabButtons.forEach((button, index) => {
+      if (index === 0) {
+        button.classList.add('active');
+      } else {
+        button.classList.remove('active');
+      }
+      
+      // 添加点击事件处理
+      button.addEventListener('click', function() {
+        // 移除所有激活状态
+        tabButtons.forEach(btn => btn.classList.remove('active'));
+        tabContents.forEach(content => content.classList.remove('active'));
+        
+        // 激活当前选中的页卡和按钮
+        this.classList.add('active');
+        tabContents[index].classList.add('active');
+        
+        // 如果是切换到图表页卡，需要重新调整图表大小
+        if (tabContents[index].querySelector('#growthChart') || 
+            tabContents[index].querySelector('#gaugeChart')) {
+          setTimeout(() => {
+            if (window.growthChart) window.growthChart.resize();
+            if (window.gaugeChart) window.gaugeChart.resize();
+          }, 50);
+        }
+      });
+    });
+  }
+}
+
+/**
+ * 显示历史数据弹窗
+ * @param {string} deviceId - 设备ID
+ * @param {string} deviceType - 设备类型
+ */
+function showHistoryDataPopup(deviceId, deviceType) {
+  // 获取已有的弹窗元素，如果不存在则创建
+  let historyPopup = document.getElementById('historyDataPopup');
+  if (!historyPopup) {
+    historyPopup = document.createElement('div');
+    historyPopup.id = 'historyDataPopup';
+    historyPopup.className = 'history-data-popup';
+    document.body.appendChild(historyPopup);
+  }
+
+  // 设置弹窗内容
+  let title = '历史数据';
+  let content = '';
+  
+  switch(deviceType) {
+    case 'monitor':
+      title = '苗情监测设备历史数据';
+      content = `
+        <div class="history-data-chart" id="temperatureChart" style="height: 200px;"></div>
+        <div class="history-data-chart" id="humidityChart" style="height: 200px;"></div>
+      `;
+      break;
+    case 'light':
+      title = '智能杀虫灯历史数据';
+      content = `
+        <div class="history-data-chart" id="catchesChart" style="height: 250px;"></div>
+      `;
+      break;
+    case 'trap':
+      title = '虫情监测仪历史数据';
+      content = `
+        <div class="history-data-chart" id="pestDensityChart" style="height: 250px;"></div>
+      `;
+      break;
+    default:
+      content = `<p>暂无 ${deviceId} 的历史数据</p>`;
+  }
+  
+  // 构建弹窗HTML
+  historyPopup.innerHTML = `
+    <div class="popup-content">
+      <div class="popup-header">
+        <h3 class="popup-title">${title}</h3>
+        <button class="popup-close" onclick="closeHistoryPopup()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="popup-body">
+        ${content}
+      </div>
+      <div class="popup-footer">
+        <button class="btn btn-primary" onclick="exportHistoryData('${deviceId}')">导出数据</button>
+        <button class="btn btn-secondary" onclick="closeHistoryPopup()">关闭</button>
+      </div>
+    </div>
+  `;
+  
+  // 显示弹窗
+  historyPopup.style.display = 'flex';
+  
+  // 初始化图表
+  setTimeout(() => {
+    if (deviceType === 'monitor') {
+      initTemperatureChart();
+      initHumidityChart();
+    } else if (deviceType === 'light') {
+      initCatchesChart();
+    } else if (deviceType === 'trap') {
+      initPestDensityChart();
+    }
+  }, 100);
+}
+
+/**
+ * 关闭历史数据弹窗
+ */
+function closeHistoryPopup() {
+  const historyPopup = document.getElementById('historyDataPopup');
+  if (historyPopup) {
+    historyPopup.style.display = 'none';
+  }
+}
+
+/**
+ * 导出历史数据
+ */
+function exportHistoryData(deviceId) {
+  alert(`正在导出设备 ${deviceId} 的历史数据，请稍候...`);
+  // 实际项目中这里应该调用后端API进行数据导出
+}
+
+/**
+ * 初始化温度历史图表
+ */
+function initTemperatureChart() {
+  const chartDom = document.getElementById('temperatureChart');
+  if (!chartDom) return;
+  
+  const chart = echarts.init(chartDom);
+  
+  // 模拟数据 - 最近7天的温度数据
+  const dates = [];
+  const temperatureData = [];
+  
+  const today = new Date();
+  for (let i = 6; i >= 0; i--) {
+    const date = new Date(today);
+    date.setDate(today.getDate() - i);
+    dates.push(`${date.getMonth() + 1}/${date.getDate()}`);
+    
+    // 生成模拟温度数据，范围20-28度
+    temperatureData.push((20 + Math.random() * 8).toFixed(1));
+  }
+  
+  const option = {
+    title: {
+      text: '温度变化趋势(℃)',
+      left: 'center',
+      textStyle: {
+        fontSize: 14
+      }
+    },
+    tooltip: {
+      trigger: 'axis'
+    },
+    xAxis: {
+      type: 'category',
+      data: dates
+    },
+    yAxis: {
+      type: 'value',
+      name: '温度(℃)',
+      min: 18,
+      max: 30
+    },
+    series: [
+      {
+        name: '温度',
+        type: 'line',
+        data: temperatureData,
+        smooth: true,
+        lineStyle: {
+          width: 3,
+          color: '#FF9F43'
+        },
+        itemStyle: {
+          color: '#FF9F43'
+        },
+        areaStyle: {
+          color: {
+            type: 'linear',
+            x: 0,
+            y: 0,
+            x2: 0,
+            y2: 1,
+            colorStops: [
+              { offset: 0, color: 'rgba(255, 159, 67, 0.5)' },
+              { offset: 1, color: 'rgba(255, 159, 67, 0.1)' }
+            ]
+          }
+        }
+      }
+    ]
+  };
+  
+  chart.setOption(option);
+}
+
+/**
+ * 初始化湿度历史图表
+ */
+function initHumidityChart() {
+  const chartDom = document.getElementById('humidityChart');
+  if (!chartDom) return;
+  
+  const chart = echarts.init(chartDom);
+  
+  // 模拟数据 - 最近7天的湿度数据
+  const dates = [];
+  const humidityData = [];
+  const soilMoistureData = [];
+  
+  const today = new Date();
+  for (let i = 6; i >= 0; i--) {
+    const date = new Date(today);
+    date.setDate(today.getDate() - i);
+    dates.push(`${date.getMonth() + 1}/${date.getDate()}`);
+    
+    // 生成模拟湿度数据，范围60-90%
+    humidityData.push((60 + Math.random() * 30).toFixed(1));
+    
+    // 生成模拟土壤湿度数据，范围50-80%
+    soilMoistureData.push((50 + Math.random() * 30).toFixed(1));
+  }
+  
+  const option = {
+    title: {
+      text: '湿度变化趋势(%)',
+      left: 'center',
+      textStyle: {
+        fontSize: 14
+      }
+    },
+    tooltip: {
+      trigger: 'axis'
+    },
+    legend: {
+      data: ['空气湿度', '土壤湿度'],
+      bottom: 0
+    },
+    xAxis: {
+      type: 'category',
+      data: dates
+    },
+    yAxis: {
+      type: 'value',
+      name: '湿度(%)',
+      min: 40,
+      max: 100
+    },
+    series: [
+      {
+        name: '空气湿度',
+        type: 'line',
+        data: humidityData,
+        smooth: true,
+        lineStyle: {
+          width: 2,
+          color: '#1890FF'
+        },
+        itemStyle: {
+          color: '#1890FF'
+        }
+      },
+      {
+        name: '土壤湿度',
+        type: 'line',
+        data: soilMoistureData,
+        smooth: true,
+        lineStyle: {
+          width: 2,
+          color: '#52C41A'
+        },
+        itemStyle: {
+          color: '#52C41A'
+        }
+      }
+    ]
+  };
+  
+  chart.setOption(option);
+}
+
+/**
+ * 初始化捕获数量历史图表
+ */
+function initCatchesChart() {
+  const chartDom = document.getElementById('catchesChart');
+  if (!chartDom) return;
+  
+  const chart = echarts.init(chartDom);
+  
+  // 模拟数据 - 最近7天的捕获数据
+  const dates = [];
+  const catchesData = [];
+  
+  const today = new Date();
+  for (let i = 6; i >= 0; i--) {
+    const date = new Date(today);
+    date.setDate(today.getDate() - i);
+    dates.push(`${date.getMonth() + 1}/${date.getDate()}`);
+    
+    // 生成模拟捕获数据，范围30-70
+    catchesData.push(Math.floor(30 + Math.random() * 40));
+  }
+  
+  const option = {
+    title: {
+      text: '每日捕获数量统计',
+      left: 'center',
+      textStyle: {
+        fontSize: 14
+      }
+    },
+    tooltip: {
+      trigger: 'axis'
+    },
+    xAxis: {
+      type: 'category',
+      data: dates
+    },
+    yAxis: {
+      type: 'value',
+      name: '捕获数量(只)'
+    },
+    series: [
+      {
+        name: '捕获数量',
+        type: 'bar',
+        data: catchesData,
+        itemStyle: {
+          color: {
+            type: 'linear',
+            x: 0,
+            y: 0,
+            x2: 0,
+            y2: 1,
+            colorStops: [
+              { offset: 0, color: '#FAAD14' },
+              { offset: 1, color: '#FFD591' }
+            ]
+          }
+        },
+        barWidth: '50%',
+        label: {
+          show: true,
+          position: 'top',
+          formatter: '{c}只'
+        }
+      }
+    ]
+  };
+  
+  chart.setOption(option);
+}
+
+/**
+ * 初始化害虫密度历史图表
+ */
+function initPestDensityChart() {
+  const chartDom = document.getElementById('pestDensityChart');
+  if (!chartDom) return;
+  
+  const chart = echarts.init(chartDom);
+  
+  // 模拟数据 - 最近30天的害虫密度数据
+  const dates = [];
+  const densityData = [];
+  const warningLine = [];
+  
+  const today = new Date();
+  for (let i = 29; i >= 0; i--) {
+    const date = new Date(today);
+    date.setDate(today.getDate() - i);
+    dates.push(`${date.getMonth() + 1}/${date.getDate()}`);
+    
+    // 生成模拟密度数据，一般在0.2-0.6之间，但最后几天有高峰
+    let density;
+    if (i < 3) {
+      density = (0.6 + Math.random() * 0.3).toFixed(2);
+    } else {
+      density = (0.2 + Math.random() * 0.4).toFixed(2);
+    }
+    densityData.push(density);
+    
+    // 预警线固定在0.7
+    warningLine.push(0.7);
+  }
+  
+  const option = {
+    title: {
+      text: '害虫密度变化趋势',
+      left: 'center',
+      textStyle: {
+        fontSize: 14
+      }
+    },
+    tooltip: {
+      trigger: 'axis'
+    },
+    legend: {
+      data: ['害虫密度', '预警阈值'],
+      bottom: 0
+    },
+    xAxis: {
+      type: 'category',
+      data: dates
+    },
+    yAxis: {
+      type: 'value',
+      name: '密度指数',
+      min: 0,
+      max: 1
+    },
+    series: [
+      {
+        name: '害虫密度',
+        type: 'line',
+        data: densityData,
+        smooth: true,
+        lineStyle: {
+          width: 3,
+          color: '#1890FF'
+        },
+        itemStyle: {
+          color: '#1890FF'
+        },
+        markPoint: {
+          data: [
+            { type: 'max', name: '最大值' }
+          ]
+        }
+      },
+      {
+        name: '预警阈值',
+        type: 'line',
+        data: warningLine,
+        lineStyle: {
+          width: 2,
+          color: '#F5222D',
+          type: 'dashed'
+        },
+        itemStyle: {
+          color: '#F5222D'
+        }
+      }
+    ]
+  };
+  
+  chart.setOption(option);
 } 

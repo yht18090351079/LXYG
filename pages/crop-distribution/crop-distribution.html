@@ -5,8 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>作物分布 - 甘肃临夏农情遥感系统</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
   <link rel="stylesheet" href="../../assets/css/common.css">
   <link rel="stylesheet" href="crop-distribution.css">
+  <script src="../../static/js/jquery.min.js"></script>
+  <script src="../../static/js/echarts.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="../../static/js/citymap.js"></script>
 </head>
 <body>
   <div class="app-container">
@@ -52,20 +57,11 @@
         <div class="side-menu-content">
           <div class="menu-section">
             <h3 class="menu-section-title">区域筛选</h3>
-            <div class="area-level-selector">
-              <label class="form-label">行政层级</label>
-              <select class="form-input" id="area-level">
-                <option value="city" selected>县市级</option>
-                <option value="town">乡镇级</option>
-                <option value="village">村级</option>
-              </select>
-            </div>
             
             <div class="area-selector">
-              <label class="form-label">行政区域</label>
-              <!-- 县市级选择 -->
-              <select class="form-input" id="city-selector">
-                <option value="all">全部县市</option>
+              <label class="form-label">区县</label>
+              <select class="form-input" id="county-selector">
+                <option value="all">全部区县</option>
                 <option value="linxia-city">临夏市</option>
                 <option value="linxia-county">临夏县</option>
                 <option value="kangle">康乐县</option>
@@ -75,19 +71,14 @@
                 <option value="dongxiang">东乡族自治县</option>
                 <option value="jishishan">积石山保安族东乡族撒拉族自治县</option>
               </select>
-              
-              <!-- 乡镇级选择 (默认隐藏) -->
-              <select class="form-input" id="town-selector" style="display:none;">
+            </div>
+            
+            <div class="area-selector" style="margin-top: 16px;">
+              <label class="form-label">乡镇</label>
+              <select class="form-input" id="town-selector">
                 <option value="all">全部乡镇</option>
-                <!-- 这里将根据选择的县市动态加载 -->
+                <option value="disabled" disabled>请先选择区县</option>
               </select>
-              
-              <!-- 村级选择 (默认隐藏) -->
-              <select class="form-input" id="village-selector" style="display:none;">
-                <option value="all">全部村</option>
-                <!-- 这里将根据选择的乡镇动态加载 -->
-              </select>
-              <button class="btn btn-primary query-btn">查询</button>
             </div>
           </div>
           

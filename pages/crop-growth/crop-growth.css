@@ -91,9 +91,9 @@
 }
 
 .side-menu-toggle {
-  position: absolute;
-  right: -15px;
-  top: 50%;
+  position: fixed;
+  right: calc(100% - 350px);
+  top: 50vh;
   transform: translateY(-50%);
   width: 30px;
   height: 30px;
@@ -104,8 +104,17 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  z-index: 91;
+  z-index: 1000;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.side-menu.collapsed .side-menu-toggle {
+  right: calc(100% - 56px);
+}
+
+.side-menu.collapsed .side-menu-toggle i {
+  transform: rotate(180deg);
 }
 
 /* 地图容器样式 */
@@ -345,9 +354,9 @@
 
 /* 右侧数据面板样式 */
 .data-panel-toggle {
-  position: absolute;
-  left: -15px;
-  top: 50%;
+  position: fixed;
+  left: calc(100vw - 450px - 15px);
+  top: 50vh;
   transform: translateY(-50%);
   width: 30px;
   height: 30px;
@@ -358,8 +367,17 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  z-index: 91;
+  z-index: 1000;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.data-panel.collapsed .data-panel-toggle {
+  left: calc(100vw - 15px);
+}
+
+.data-panel.collapsed .data-panel-toggle i {
+  transform: rotate(180deg);
 }
 
 .data-panel-content {
@@ -873,4 +891,17 @@
   .data-panel {
     width: 100%;
   }
+}
+
+/* 添加数据面板折叠状态样式 */
+.data-panel.collapsed {
+  width: 0;
+  min-width: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.data-panel.collapsed .data-panel-content {
+  opacity: 0;
+  visibility: hidden;
 } 

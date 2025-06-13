@@ -125,8 +125,13 @@ h3 {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  z-index: 91;
+  z-index: 1000;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.side-menu.collapsed .side-menu-toggle {
+  right: -15px;
 }
 
 .side-menu.collapsed .side-menu-toggle i {
@@ -143,7 +148,7 @@ h3 {
   width: 450px;
   background-color: var(--white);
   box-shadow: -2px 0 8px rgba(0, 0, 0, 0.08);
-  transition: width 0.3s;
+  transition: width 0.3s ease;
   overflow-y: auto;
   z-index: 90;
   position: relative;
@@ -151,11 +156,15 @@ h3 {
 
 .data-panel.collapsed {
   width: 0;
+  min-width: 0;
+  padding: 0;
+  overflow: hidden;
 }
 
 .data-panel.collapsed .data-panel-content {
   overflow: hidden;
   visibility: hidden;
+  opacity: 0;
 }
 
 .data-panel-toggle {
@@ -172,8 +181,14 @@ h3 {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  z-index: 91;
+  z-index: 1000;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.data-panel.collapsed .data-panel-toggle {
+  left: -15px;
+  position: fixed;
 }
 
 .data-panel.collapsed .data-panel-toggle i {

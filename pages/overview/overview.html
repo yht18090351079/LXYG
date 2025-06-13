@@ -8,9 +8,9 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
   <link rel="stylesheet" href="../../assets/css/common.css">
   <link rel="stylesheet" href="overview.css">
-  <script src="../../../static/js/echarts.min.js"></script>
-  <script src="../../../static/js/jquery.min.js"></script>
-  <script src="../../../static/js/citymap.js"></script>
+  <script src="../../static/js/echarts.min.js"></script>
+  <script src="../../static/js/jquery.min.js"></script>
+  <script src="../../static/js/citymap.js"></script>
 </head>
 <body>
   <div class="app-container">
@@ -279,7 +279,6 @@
             </table>
           </div>
           <div class="popup-footer">
-            <button class="btn btn-primary">查看详情</button>
             <button class="btn btn-secondary">导出数据</button>
           </div>
         </div>
@@ -321,80 +320,98 @@
             </div>
           </div>
           
-          <div class="selected-details">
-            <h3 class="section-title">选中区域详情</h3>
-            <div class="details-content">
-              <div class="thumbnail" style="background-color: #F0F2F5; display: flex; align-items: center; justify-content: center;">
-                <div style="font-size: 18px; color: #999;">农田图片</div>
-              </div>
-              <div class="detail-info">
-                <div class="info-row">
-                  <div class="info-label">名称：</div>
-                  <div class="info-value">示范田块 #A123</div>
-                </div>
-                <div class="info-row">
-                  <div class="info-label">位置：</div>
-                  <div class="info-value">东部区域</div>
-                </div>
-                <div class="info-row">
-                  <div class="info-label">面积：</div>
-                  <div class="info-value">123.45亩</div>
-                </div>
-                <div class="info-row">
-                  <div class="info-label">作物：</div>
-                  <div class="info-value">小麦</div>
-                </div>
-                <div class="info-row">
-                  <div class="info-label">种植时间：</div>
-                  <div class="info-value">2023-03-15</div>
-                </div>
-                <div class="info-row">
-                  <div class="info-label">生长阶段：</div>
-                  <div class="info-value">成熟期</div>
-                </div>
-                <div class="info-row">
-                  <div class="info-label">长势指数：</div>
-                  <div class="info-value">0.86 (良好)</div>
-                </div>
-                <div class="info-row">
-                  <div class="info-label">预计产量：</div>
-                  <div class="info-value">532公斤/亩</div>
-                </div>
-                <div class="info-row">
-                  <div class="info-label">权属人：</div>
-                  <div class="info-value">张三 (13812345678)</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div class="data-charts">
-            <h3 class="section-title">相关数据指标</h3>
-            <div class="chart-container">
-              <div class="chart-header">
-                <h4 class="chart-title">长势指数变化趋势</h4>
-                <div class="chart-actions">
-                  <button class="btn btn-text">
-                    <i class="fas fa-expand"></i>
-                  </button>
-                </div>
-              </div>
-              <div class="chart-body" id="growthChart">
-                <!-- 图表将通过JS加载 -->
-              </div>
+          <!-- 页卡切换区域 -->
+          <div class="tab-container">
+            <!-- 页卡标签 -->
+            <div class="tab-header">
+              <button class="tab-button active" data-tab="details">详情</button>
+              <button class="tab-button" data-tab="charts">整体指标</button>
             </div>
             
-            <div class="chart-container">
-              <div class="chart-header">
-                <h4 class="chart-title">关键指标完成情况</h4>
-                <div class="chart-actions">
-                  <button class="btn btn-text">
-                    <i class="fas fa-expand"></i>
-                  </button>
+            <!-- 页卡内容 -->
+            <div class="tab-contents">
+              <!-- 详情页卡 -->
+              <div class="tab-content active" id="details-tab">
+                <div class="selected-details">
+                  <h3 class="section-title">选中区域详情</h3>
+                  <div class="details-content">
+                    <div class="thumbnail" style="background-color: #F0F2F5; display: flex; align-items: center; justify-content: center;">
+                      <div style="font-size: 18px; color: #999;">农田图片</div>
+                    </div>
+                    <div class="detail-info">
+                      <div class="info-row">
+                        <div class="info-label">名称：</div>
+                        <div class="info-value">示范田块 #A123</div>
+                      </div>
+                      <div class="info-row">
+                        <div class="info-label">位置：</div>
+                        <div class="info-value">东部区域</div>
+                      </div>
+                      <div class="info-row">
+                        <div class="info-label">面积：</div>
+                        <div class="info-value">123.45亩</div>
+                      </div>
+                      <div class="info-row">
+                        <div class="info-label">作物：</div>
+                        <div class="info-value">小麦</div>
+                      </div>
+                      <div class="info-row">
+                        <div class="info-label">种植时间：</div>
+                        <div class="info-value">2023-03-15</div>
+                      </div>
+                      <div class="info-row">
+                        <div class="info-label">生长阶段：</div>
+                        <div class="info-value">成熟期</div>
+                      </div>
+                      <div class="info-row">
+                        <div class="info-label">长势指数：</div>
+                        <div class="info-value">0.86 (良好)</div>
+                      </div>
+                      <div class="info-row">
+                        <div class="info-label">预计产量：</div>
+                        <div class="info-value">532公斤/亩</div>
+                      </div>
+                      <div class="info-row">
+                        <div class="info-label">权属人：</div>
+                        <div class="info-value">张三 (13812345678)</div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div class="chart-body" id="gaugeChart">
-                <!-- 图表将通过JS加载 -->
+              
+              <!-- 图表页卡 -->
+              <div class="tab-content" id="charts-tab">
+                <div class="data-charts">
+                  <h3 class="section-title">相关数据指标</h3>
+                  <div class="chart-container">
+                    <div class="chart-header">
+                      <h4 class="chart-title">长势指数变化趋势</h4>
+                      <div class="chart-actions">
+                        <button class="btn btn-text">
+                          <i class="fas fa-expand"></i>
+                        </button>
+                      </div>
+                    </div>
+                    <div class="chart-body" id="growthChart">
+                      <!-- 图表将通过JS加载 -->
+                    </div>
+                  </div>
+                  
+                  <div class="chart-container">
+                    <div class="chart-header">
+                      <h4 class="chart-title">关键指标完成情况</h4>
+                      <div class="chart-actions">
+                        <button class="btn btn-text">
+                          <i class="fas fa-expand"></i>
+                        </button>
+                      </div>
+                    </div>
+                    <div class="chart-body" id="gaugeChart">
+                      <!-- 图表将通过JS加载 -->
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
